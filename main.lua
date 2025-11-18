@@ -6,10 +6,6 @@ local io = require('io')
 -- Be careful line below not contain 'n' in read() because barcode may have leading '0'
 local string_digits = tostring(io.read())
 
--- print(tonumber(string_digits))
-
-
-
 function PrintBarcode(string)
     local one_full_unit = "█"
     local one_empty_unit = "░"
@@ -19,7 +15,7 @@ function PrintBarcode(string)
                 io.write(one_full_unit)
             elseif string.sub(string, j, j) == "0" then
                 io.write(one_empty_unit)
-            else io.write(string.sub(string, j, j)) return --This condition for error message
+            else io.write(string.sub(string, j+1, j)) return --This condition for error message
             end
         end
         io.write("\n")

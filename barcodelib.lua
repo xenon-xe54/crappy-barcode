@@ -102,7 +102,7 @@ end
 -- 1 mean bar (black)
 function B.EAN8_encode(code_string)
     local barcode = {}
-    if tonumber(code_string) == nil then
+    if math.type(tonumber(code_string)) == nil or math.type(tonumber(code_string)) == "float" then
         table.insert(barcode, "String must contain only digits")
         return table.concat(barcode)
     else
@@ -130,7 +130,7 @@ end
 -- 1 mean bar (black)
 function B.UPCA_encode(code_string)
     local barcode = {}
-    if tonumber(code_string) == nil then
+    if math.type(tonumber(code_string)) == nil or math.type(tonumber(code_string)) == "float" then
         table.insert(barcode, "String must contain only digits")
         return table.concat(barcode)
     else
@@ -159,7 +159,7 @@ end
 -- 1 mean bar (black)
 function B.EAN13_encode(code_string)
     local barcode = {}
-    if tonumber(code_string) == nil then
+    if math.type(tonumber(code_string)) == nil or math.type(tonumber(code_string)) == "float" then
         table.insert(barcode, "String must contain only digits")
         return table.concat(barcode)
     else
