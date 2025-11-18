@@ -46,6 +46,7 @@ function TranslateNumber(number, subtable)
         nine = { 3, 1, 1, 2 }
     }
 
+
     if number == '0' then
         unit = "zero";
     elseif number == '1' then
@@ -101,21 +102,26 @@ end
 -- 1 mean bar (black)
 function B.EAN8_encode(code_string)
     local barcode = {}
-    table.insert(barcode, CreateAuxiliary("quiet"))
-    table.insert(barcode, CreateAuxiliary("normal"))
-    for i = 1, string.len(code_string) do
-        if i > 4 then
-            table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableC"))
-        elseif i == 4 then
-            table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
-            table.insert(barcode, CreateAuxiliary("center"))
-        else
-            table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+    if tonumber(code_string) == nil then
+        table.insert(barcode, "String must contain only digits")
+        return table.concat(barcode)
+    else
+        table.insert(barcode, CreateAuxiliary("quiet"))
+        table.insert(barcode, CreateAuxiliary("normal"))
+        for i = 1, string.len(code_string) do
+            if i > 4 then
+                table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableC"))
+            elseif i == 4 then
+                table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+                table.insert(barcode, CreateAuxiliary("center"))
+            else
+                table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+            end
         end
+        table.insert(barcode, CreateAuxiliary("normal"))
+        table.insert(barcode, CreateAuxiliary("quiet"))
+        return table.concat(barcode)
     end
-    table.insert(barcode, CreateAuxiliary("normal"))
-    table.insert(barcode, CreateAuxiliary("quiet"))
-    return table.concat(barcode)
 end
 
 -- Functon argument string with digits 0-9
@@ -124,22 +130,27 @@ end
 -- 1 mean bar (black)
 function B.UPCA_encode(code_string)
     local barcode = {}
-    table.insert(barcode, CreateAuxiliary("quiet"))
-    table.insert(barcode, CreateAuxiliary("normal"))
-    for i = 1, string.len(code_string) do
-        -- print(string.sub(code_string, i, i))
-        if i > 6 then
-            table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableC"))
-        elseif i == 6 then
-            table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
-            table.insert(barcode, CreateAuxiliary("center"))
-        else
-            table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+    if tonumber(code_string) == nil then
+        table.insert(barcode, "String must contain only digits")
+        return table.concat(barcode)
+    else
+        table.insert(barcode, CreateAuxiliary("quiet"))
+        table.insert(barcode, CreateAuxiliary("normal"))
+        for i = 1, string.len(code_string) do
+            -- print(string.sub(code_string, i, i))
+            if i > 6 then
+                table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableC"))
+            elseif i == 6 then
+                table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+                table.insert(barcode, CreateAuxiliary("center"))
+            else
+                table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+            end
         end
+        table.insert(barcode, CreateAuxiliary("normal"))
+        table.insert(barcode, CreateAuxiliary("quiet"))
+        return table.concat(barcode)
     end
-    table.insert(barcode, CreateAuxiliary("normal"))
-    table.insert(barcode, CreateAuxiliary("quiet"))
-    return table.concat(barcode)
 end
 
 -- Functon argument string with digits 0-9
@@ -148,55 +159,60 @@ end
 -- 1 mean bar (black)
 function B.EAN13_encode(code_string)
     local barcode = {}
-    local leading_char = string.sub(code_string, 1, 1)
-    if leading_char == "0" then
-        return B.UPCA_encode(code_string:sub(2))
-    else
-        table.insert(barcode, CreateAuxiliary("quiet13start"))
-        table.insert(barcode, CreateAuxiliary("normal"))
-
-
-        for i = 1, string.len(code_string) do
-            if i == 2 then
-                table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
-            elseif i == 3 then
-                if leading_char == "1" or leading_char == "2" or leading_char == "3" then
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
-                else
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
-                end
-            elseif i == 4 then
-                if leading_char == "4" or leading_char == "7" or leading_char == "8" then
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
-                else
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
-                end
-            elseif i == 5 then
-                if leading_char == "1" or leading_char == "4" or leading_char == "5" or leading_char == "9" then
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
-                else
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
-                end
-            elseif i == 6 then
-                if leading_char == "2" or leading_char == "5" or leading_char == "6" or leading_char == "7" then
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
-                else
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
-                end
-            elseif i == 7 then
-                if leading_char == "3" or leading_char == "6" or leading_char == "8" or leading_char == "9" then
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
-                else
-                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
-                end
-                table.insert(barcode, CreateAuxiliary("center"))
-            elseif i > 7 then
-                table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableC"))
-            end
-        end
-        table.insert(barcode, CreateAuxiliary("normal"))
-        table.insert(barcode, CreateAuxiliary("quiet"))
+    if tonumber(code_string) == nil then
+        table.insert(barcode, "String must contain only digits")
         return table.concat(barcode)
+    else
+        local leading_char = string.sub(code_string, 1, 1)
+        if leading_char == "0" then
+            return B.UPCA_encode(code_string:sub(2))
+        else
+            table.insert(barcode, CreateAuxiliary("quiet13start"))
+            table.insert(barcode, CreateAuxiliary("normal"))
+
+
+            for i = 1, string.len(code_string) do
+                if i == 2 then
+                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+                elseif i == 3 then
+                    if leading_char == "1" or leading_char == "2" or leading_char == "3" then
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+                    else
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
+                    end
+                elseif i == 4 then
+                    if leading_char == "4" or leading_char == "7" or leading_char == "8" then
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+                    else
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
+                    end
+                elseif i == 5 then
+                    if leading_char == "1" or leading_char == "4" or leading_char == "5" or leading_char == "9" then
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+                    else
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
+                    end
+                elseif i == 6 then
+                    if leading_char == "2" or leading_char == "5" or leading_char == "6" or leading_char == "7" then
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+                    else
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
+                    end
+                elseif i == 7 then
+                    if leading_char == "3" or leading_char == "6" or leading_char == "8" or leading_char == "9" then
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableA"))
+                    else
+                        table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableB"))
+                    end
+                    table.insert(barcode, CreateAuxiliary("center"))
+                elseif i > 7 then
+                    table.insert(barcode, TranslateNumber(string.sub(code_string, i, i), "tableC"))
+                end
+            end
+            table.insert(barcode, CreateAuxiliary("normal"))
+            table.insert(barcode, CreateAuxiliary("quiet"))
+            return table.concat(barcode)
+        end
     end
 end
 
